@@ -1,0 +1,93 @@
+body {
+    margin: 0;
+}
+
+.main {
+    padding: 2rem;
+    color: white;
+    background-color: rgb(43, 38, 38);
+    min-height: 100vh;
+}
+
+.main-heading {
+    text-align: center;
+    margin: 20px;
+    font-weight: 600;
+}
+
+.space{
+    margin-top : 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.btn {
+    padding: 1rem 0.5rem;
+    font-size: larger;
+    font-weight: 400;
+    background-color: rgb(17, 16, 16);
+    color: wheat;
+    border-radius: 10px;
+    border: 2px white solid;
+    cursor: pointer;
+    margin: 0 2rem;
+}
+
+.btn:hover {
+    background-color: aliceblue;
+    color: black;
+    border: 2px black solid;
+}
+
+.sub-head {
+    font-size: x-large;
+    font-weight: 600;
+    padding: 2rem 0 1rem 2rem;
+}
+
+.inc {
+    padding: 0.5rem 0.25rem;
+    font-size: medium;
+    font-weight: 400;
+    background-color: rgb(64, 231, 13);
+    color: rgb(7, 7, 7);
+    border-radius: 10px;
+    border: 2px white solid;
+    cursor: pointer;
+}
+
+.inc:hover {
+    background-color: aliceblue;
+    color: rgb(6, 105, 11);
+    border: 2px rgb(6, 105, 11) solid;
+}
+
+.dec {
+    padding: 0.5rem 0.25rem;
+    font-size: medium;
+    font-weight: 400;
+    background-color: rgb(196, 21, 21);
+    color: rgb(255, 255, 255);
+    border-radius: 10px;
+    border: 2px white solid;
+    cursor: pointer;
+}
+
+.dec:hover {
+    background-color: aliceblue;
+    color: rgb(196, 21, 21);
+    border: 2px rgb(196, 21, 21) solid;
+}
+
+.btn_block {
+    display: flex;
+    gap: 4rem;
+    margin-left: 4rem;
+    align-items: center;
+}
+
+.btn_box {
+    display: flex;
+    justify-content: space-around;
+}

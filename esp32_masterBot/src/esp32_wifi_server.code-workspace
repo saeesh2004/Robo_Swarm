@@ -1,0 +1,11 @@
+{
+	"folders": [
+		{
+			"name": "Esp32_slave bots",
+			"path": "../../Esp32_slave bots"
+		}
+	],
+	"settings": {
+		"liveServer.settings.port": 5502
+	}
+}

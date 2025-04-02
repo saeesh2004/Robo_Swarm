@@ -1,0 +1,179 @@
+#include <WiFi.h>
+#include <WebServer.h>
+#include <Wire.h>
+#include <ArduinoJson.h>
+
+String command;             // String to store app command state.
+int speedCarA = 230;   
+int speedCarB = 170;
+      // 400 - 1023.
+int speed_Coeff = 3;
+
+const char* ssid = "NodeMCU Car";
+const char* password = "your_password"; // Replace "your_password" with the actual password
+WebServer server(80);
+
+// Pin definitions for ESP32
+#define ENA   14          // Enable/speed motors Right        GPIO14
+#define ENB   12          // Enable/speed motors Left         GPIO12
+#define IN_1  13          // L298N in1 motors Right           GPIO13
+#define IN_2  15          // L298N in2 motors Right           GPIO15
+#define IN_3  0           // L298N in3 motors Left            GPIO0
+#define IN_4  2           // L298N in4 motors Left            GPIO2
+
+void goAhead(int d) { 
+  digitalWrite(IN_1, LOW);
+  digitalWrite(IN_2, HIGH);
+  analogWrite(ENA, speedCarA);
+
+  digitalWrite(IN_3, LOW);
+  digitalWrite(IN_4, HIGH);
+  analogWrite(ENB, speedCarB);
+
+  delay(d);
+}
+
+void goBack(int d) { 
+  digitalWrite(IN_1, HIGH);
+  digitalWrite(IN_2, LOW);
+  analogWrite(ENA, speedCarA);
+
+  digitalWrite(IN_3, HIGH);
+  digitalWrite(IN_4, LOW);
+  analogWrite(ENB, speedCarB);
+
+  delay(d);
+}
+
+void goRight() { 
+  digitalWrite(IN_1, HIGH);
+  digitalWrite(IN_2, LOW);
+  analogWrite(ENA, speedCarA);
+
+  digitalWrite(IN_3, LOW);
+  digitalWrite(IN_4, HIGH);
+  analogWrite(ENB, speedCarB);
+}
+
+void goLeft() {
+  digitalWrite(IN_1, LOW);
+  digitalWrite(IN_2, HIGH);
+  analogWrite(ENA, speedCarA);
+
+  digitalWrite(IN_3, HIGH);
+  digitalWrite(IN_4, LOW);
+  analogWrite(ENB, speedCarB);
+}
+
+void angle(int a, bool right){
+  int fullCircle = 2400 / 360;
+  if(right){
+    goRight();
+    delay(a * fullCircle);
+  }else {
+    goLeft();
+    delay(a * fullCircle);
+  }
+}
+
+void stopRobot() {  
+  digitalWrite(IN_1, LOW);
+  digitalWrite(IN_2, LOW);
+
+  digitalWrite(IN_3, LOW);
+  digitalWrite(IN_4, LOW);
+}
+
+void moveToRightAngle(){
+
+
+  // Bot 3
+  goAhead(500);
+  stopRobot();
+  delay(5500);
+  goBack(500);
+  stopRobot();
+}
+
+void moveToEquilateral(){
+
+  // Bot 3
+  angle(180, true);
+  goAhead(1500);
+  stopRobot();
+  delay(3000);
+  angle(180, true);
+  goAhead(1500);
+  stopRobot();
+}
+
+void march(){
+  delay(2000)
+  goAhead(3000);
+  stopRobot();
+  angle(180, true);
+  stopRobot();
+
+  goAhead(3000);
+  stopRobot();
+  delay(2000);
+  angle(180, true);
+  stopRobot();
+}
+
+void HTTP_handleRoot() {
+  if (server.hasArg("f")) {
+    Serial.println(server.arg("f"));
+  }
+  command = server.arg("f");
+  Serial.println(command);
+  if (command == "F") goAhead(6000);
+  else if (command == "B") goBack(6000);
+  else if (command == "o") march();
+  else if (command == "r") moveToRightAngle();
+  else if (command == "e") moveToEquilateral();
+  else if (command == "d1") speedCarA--;
+  else if (command == "d2") speedCarB--;
+  else if (command == "i1") speedCarA++;
+  else if (command == "i2") speedCarB++;
+  else if (command == "S") stopRobot();
+  else {
+    Serial.println("here");
+    stopRobot();
+  }
+  delay(2000);
+  server.send(200, "text/html", "received");
+  delay(1);
+}
+
+void setup() {
+  pinMode(ENA, OUTPUT);
+  pinMode(ENB, OUTPUT);  
+  pinMode(IN_1, OUTPUT);
+  pinMode(IN_2, OUTPUT);
+  pinMode(IN_3, OUTPUT);
+  pinMode(IN_4, OUTPUT); 
+
+  Serial.begin(115200);
+
+  // Connecting to WiFi
+  WiFi.begin(ssid);
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(1000);
+    Serial.println("Connecting to WiFi...");
+  }
+  
+  Serial.println("Connected to WiFi");
+  Serial.print("IP address: ");
+  Serial.println(WiFi.localIP());
+
+  // Starting Web-server
+  server.on("/formation", HTTP_handleRoot);
+  server.onNotFound(HTTP_handleRoot);
+  server.begin();    
+}
+
+void loop() {
+  server.handleClient();
+  delay(1000);
+}
